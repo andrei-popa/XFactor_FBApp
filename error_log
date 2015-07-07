@@ -1,0 +1,3 @@
+[07-Jul-2015 11:21:25 Europe/Bucharest] PHP Fatal error:  Uncaught OAuthException: (#10) Application does not have permission for this action
+  thrown in /home/rezumate/public_html/liked.ro/apps/jurat-xfactor/facebook-php-sdk/src/base_facebook.php on line 1340
+[07-Jul-2015 11:21:45 Europe/Bucharest] CSRF state token does not match one provided.

@@ -1,0 +1,190 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/*  ze style  */
+
+body {
+	background: url(../img/xbg.jpg) #171a1c no-repeat 50% 0;
+	font-family: 'Open Sans', sans-serif;
+
+}
+div#content {
+	width: 980px;
+	margin:0 auto;
+}
+.upper {
+	width: 963px;
+	height: 447px;
+	margin: 200px auto 0 auto;
+	background: url(../img/tiffet-halep.png) 0 0 no-repeat;
+	position: relative;
+}
+#fbLogin {
+	display: block;
+	position: absolute;
+	width: 400px;
+	height: 100px;
+	bottom: 42px;
+	right: 172px;
+	text-indent: -9999px;
+}
+.banda {
+	width: 100%;
+	height: 9px;
+	background-color: #0c5cb9;
+	opacity: 0.6;
+	position: absolute;
+	left: 0;
+	margin-top: -9px;
+}
+.upper.logged {
+	background: none;
+	padding-top: 20px;
+	height: 427px;
+}
+.fleft, .fright {
+	font-size: 40px;
+	font-weight: 300;
+	color: #fff;
+	float: left;
+	width: 370px;
+	line-height:48px;
+	text-shadow: 0 1px 3px #000;
+	margin-right: 30px;
+	text-align: right;
+}
+.fleft p {
+	margin-top: 100px;
+}
+.fright {
+	float: right;
+}
+.fleft.pic img {
+	display:block;
+}
+.fleft.pic {
+	-webkit-box-shadow: 0px 1px 17px 0px rgba(0, 0, 0, 1);
+	-moz-box-shadow:    0px 1px 17px 0px rgba(0, 0, 0, 1);
+	box-shadow:         0px 1px 17px 0px rgba(0, 0, 0, 1);
+	width: 300px;
+}
+.fleft.save {
+	width: 200px;
+}
+.fleft.save a {
+	color: #fff;
+	font-size: 20px;
+	display: block;
+	padding: 5px 20px;
+	border: 2px solid #fff;
+	text-shadow: none;
+	text-decoration: none;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	margin-top: 100px;
+	font-weight: 600;
+}
+.fleft.save a:hover {
+	background-color: #fff;
+	color: #333;
+}
+.fleft.save p {
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 20px;
+	margin-top: 20px;
+	opacity: 0.7;
+	text-align: left;
+}
+.fleft.save p.final {
+	margin-top: 90px;
+	opacity: 1;
+}
+.fleft.save p.final span {
+	opacity: 0.7;
+}
+.fleft.save a.final {
+	margin-top: 20px;
+}
+.statement {
+	width: 500px;
+	margin: 30px auto 0 auto;
+}
+.statement p {
+	font-size: 18px;
+	font-weight: 400;
+	color: #393939;
+	text-align: center;
+	line-height: 25px;
+}
+.statement p span {
+	color: #686868;
+}
+.statement p strong {
+	font-size: 14px;
+	display: block;
+	margin-top: 20px;
+	line-height: 20px;
+}
+
+
+/* presets */
+.clearfix:before,
+.clearfix:after {
+  content:"";
+  display:table;
+}
+.clearfix:after {
+  clear:both;
+}
+.clearfix {
+  zoom:1; /* For IE 6/7 (trigger hasLayout) */
+}
