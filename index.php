@@ -12,8 +12,8 @@ use Facebook\FacebookAuthorizationException;
 use Facebook\GraphObject;
 use Facebook\GraphSessionInfo;
 
-$appid = '1624284471121836'; // your AppID
-$secret = 'b5e9b985b6d8d8f7de2829c97171595f'; // your secret
+$appid = ''; // your AppID
+$secret = ''; // your secret
 $redirect_url = 'http://xfactor.a1.ro/jurat/';
 FacebookSession::setDefaultApplication($appid, $secret);
 
@@ -41,9 +41,11 @@ if( isset($_SESSION['token'])){
         // Session is not valid any more, get a new one.
         $session = $helper->getSessionFromRedirect();
     }
-}
+}?>
 
-if ( isset( $session ) && $session ):?>
+<?php require_once 'views/header.php';?>
+
+<?php if ( isset( $session ) && $session ):?>
 <?php
 
 // set the PHP Session 'token' to the current session token
@@ -57,7 +59,7 @@ $user_profile = $req->execute()->getGraphObject();
 $user = $user_profile->getProperty('id');
 
 
-if (isset($_GET['save'])){
+if (isset($_GET['save'])):
     $response = (new FacebookRequest(
       $session, 'POST', '/me/photos', array(
         'source' => new CURLFile(__DIR__ .'/pics/avatar-' . $user . '.jpg', 'image/jpeg2wbmp'),
@@ -65,17 +67,28 @@ if (isset($_GET['save'])){
       )
     ))->execute()->getGraphObject();
     echo "Posted with id: " . $response->getProperty('id') . "<br />";
-    echo '<a class="final" href="http://www.facebook.com/photo.php?fbid=' . $response->getProperty('id') . '&makeprofile=1" target="_blank">SALVEAZA POZA</a>';
-} else {
-    Image('http://graph.facebook.com/' . $user . '/picture?type=large', '1:1', '300x', $user);
-    echo '<a href="?save=1">Accepta poza</a>';
-}
+    echo '<a class="final" href="http://www.facebook.com/photo.php?fbid=' . $response->getProperty('id') . '&makeprofile=1" target="_blank">SALVEAZA POZA</a>';?>
+<?php else:?>
+    <div class="upper logged">
+       <div class="clearfix">
+           <div class="fleft">
+                <p>Poza ta pe facebook va arăta astfel:</p>
+           </div>
+           <div class="fleft pic">
+                <?php Image('http://graph.facebook.com/' . $user . '/picture?type=large', '1:1', '300x', $user);?>
+            </div>
+            <div class="fleft save"><a href="?save=1">Accepta poza</a><p>Poza va fi acum salvată in albumul tău de facebook în mod privat, vizibilă doar de către tine.</p></div>
+        </div>
+    </div>
 ?>
 
+<?php endif?>
+
 <?php else: ?>
-<a href = "<?= $helper->getLoginUrl(['publish_actions']) ?>" id="fbLogin">Login</a>
+<div class="upper"><a href = "<?= $helper->getLoginUrl(['publish_actions']) ?>" id="fbLogin">Login</a></div>
 <?php endif;
 
+require_once 'views/footer.php';
 
 function Image($image, $crop = null, $size = null, $user) {
     $image = ImageCreateFromString(file_get_contents($image));
