@@ -1,9 +1,81 @@
 <?php
-require 'facebook-php-sdk/src/facebook.php';
+session_start();
+require_once __DIR__ . '/vendor/autoload.php';
 
-ini_set('display_errors',1);
-ini_set('display_startup_errors',1);
-error_reporting(-1);
+use Facebook\FacebookSession;
+use Facebook\FacebookRedirectLoginHelper;
+use Facebook\FacebookRequest;
+use Facebook\FacebookResponse;
+use Facebook\FacebookSDKException;
+use Facebook\FacebookRequestException;
+use Facebook\FacebookAuthorizationException;
+use Facebook\GraphObject;
+use Facebook\GraphSessionInfo;
+
+$appid = '1624284471121836'; // your AppID
+$secret = 'b5e9b985b6d8d8f7de2829c97171595f'; // your secret
+$redirect_url = 'http://xfactor.a1.ro/jurat/';
+FacebookSession::setDefaultApplication($appid, $secret);
+
+$helper = new FacebookRedirectLoginHelper($redirect_url);
+try {
+    $session = $helper->getSessionFromRedirect();
+} catch(FacebookRequestException $ex) {
+  // When Facebook returns an error
+  echo $ex->getMessage();
+} catch(\Exception $ex) {
+  // When validation fails or other local issues
+  echo $ex->getMessage();
+}
+
+if( isset($_SESSION['token'])){
+    // We have a token, is it valid?
+    $session = new FacebookSession($_SESSION['token']);
+
+    try
+    {
+        $session->Validate($appid ,$secret);
+    }
+    catch( FacebookAuthorizationException $ex)
+    {
+        // Session is not valid any more, get a new one.
+        $session = $helper->getSessionFromRedirect();
+    }
+}
+
+if ( isset( $session ) && $session ):?>
+<?php
+
+// set the PHP Session 'token' to the current session token
+$_SESSION['token'] = $session->getToken();
+// SessionInfo
+$info = $session->getSessionInfo();
+// getAppId
+echo "Appid: " . $info->getAppId() . "<br />";
+$req = new FacebookRequest($session, 'GET', '/me');
+$user_profile = $req->execute()->getGraphObject();
+$user = $user_profile->getProperty('id');
+
+
+if (isset($_GET['save'])){
+    $response = (new FacebookRequest(
+      $session, 'POST', '/me/photos', array(
+        'source' => new CURLFile(__DIR__ .'/pics/avatar-' . $user . '.jpg', 'image/jpeg2wbmp'),
+        'message' => 'Test upload'
+      )
+    ))->execute()->getGraphObject();
+    echo "Posted with id: " . $response->getProperty('id') . "<br />";
+    echo '<a class="final" href="http://www.facebook.com/photo.php?fbid=' . $response->getProperty('id') . '&makeprofile=1" target="_blank">SALVEAZA POZA</a>';
+} else {
+    Image('http://graph.facebook.com/' . $user . '/picture?type=large', '1:1', '300x', $user);
+    echo '<a href="?save=1">Accepta poza</a>';
+}
+?>
+
+<?php else: ?>
+<a href = "<?= $helper->getLoginUrl(['publish_actions']) ?>" id="fbLogin">Login</a>
+<?php endif;
+
 
 function Image($image, $crop = null, $size = null, $user) {
     $image = ImageCreateFromString(file_get_contents($image));
@@ -14,9 +86,7 @@ function Image($image, $crop = null, $size = null, $user) {
         $width = imagesx($image);
         $height = imagesy($image);
 
-        /*
-        CROP (Aspect Ratio) Section
-        */
+
 
         if (is_null($crop) === true) {
             $crop = array($width, $height);
@@ -47,9 +117,6 @@ function Image($image, $crop = null, $size = null, $user) {
 
         }
 
-        /*
-        Resize Section
-        */
 
         if (is_null($size) === true) {
             $size = array($width, $height);
@@ -80,7 +147,7 @@ function Image($image, $crop = null, $size = null, $user) {
             ImageInterlace($result, true);
 
 			$file1 = $result;
-			$file2 = 'sim33.png';
+			$file2 = 'photo_overlayer.png';
 
 			// Second image (the overlay)
 			$overlay = imagecreatefrompng($file2);
@@ -105,123 +172,3 @@ function Image($image, $crop = null, $size = null, $user) {
 
     return false;
 }
-
-$facebook = new Facebook(array(
-  'appId'  => '180592005382838',
-  'secret' => '6adcf05420ee2523fadcb9c15ba2f0d0',
-));
-
-$loginUrl = $facebook->getLoginUrl(array ( 
-        'display' => 'page',
-        'redirect_uri' => 'http://liked.ro/apps/jurat-xfactor/'
-        ));
-
-$user = $facebook->getUser();
-//echo $user. '</br>';
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Fii cel de-al patrulea jurat X Factor!">
-    <meta property="og:url" content="http://liked.ro/apps/jurat-xfactor/"/>
-    <meta property="og:title" content="Devino Jurat X Factor!"/>
-    <meta property="og:description" content="X Factor! Show la puterea X!"/>
-    <!-- <meta property="og:image" content="http://liked.ro/apps/hai-simona/img/appicon.jpg"/> -->
-    <title>Devino Jurat X Factor!</title>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="css/main-style.css">
-</head>
-<body>
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-<div id="content">
-<div class="topfix"></div>
-<?
-if ($user) {
-	?>
-   <div class="upper logged">
-   <div class="clearfix">
-   <div class="fleft">
-   <p>Poza ta pe facebook va arăta astfel:</p>
-   </div>
-   <div class="fleft pic">
-   <?php
-	Image('http://graph.facebook.com/' . $user . '/picture?type=large', '1:1', '300x', $user);
-	?>
-	</div>
-	<div class="fleft save">
-	<?php
-	if(isset($_GET["save"])) {
-		$facebook->setFileUploadSupport(true);
-
-		//Create an album
-		$album_details = array(
-		        'message'=> '',
-		        'name'=> 'Hai Simona!'
-		);
-		$create_album = $facebook->api('/me/albums', 'post', $album_details);
-
-			//Get album ID of the album you've just created
-		  $album_uid = $create_album['id'];
-			//Upload a photo to album of ID...
-		  $photo_details = array('message'=> 'Hai Simona! O susținem pe Simona Halep in finala Roland Garros! http://liked.ro/apps/hai-simona');
-		  $file='pics/avatar-'.$user.'.jpg'; //Example image file
-		  $photo_details['image'] = '@' . realpath($file);
-
-      
-		  $upload_photo = $facebook->api('/'.$album_uid.'/photos', 'post', $photo_details);
-
-		  echo '<p class="final">ATENȚIE! <span>Poza va fi acum salvată ca poză de profil. Vei fi redirecționat către facebook.</span></p><a class="final" href="http://www.facebook.com/photo.php?fbid=' . $upload_photo['id'] . '&makeprofile=1" target="_blank">SALVEAZĂ POZA</a>';
-	      //echo $user;
-      	} else {
-      	?>
-      	<a href="?save=1">ACCEPTĂ POZA</a>
-      	<p>Poza va fi acum salvată in albumul tău de facebook în mod privat, vizibilă doar de către tine.</p>
-      	<?php } ?>
-      	</div>
-      </div>
-      </div>
-      </div>
-      <?php
-
-
-} else {
-    ?>
-    <div class="upper">
-    <?php
-    $loginUrl = $facebook->getLoginUrl(array ( 
-        'display' => 'page',
-        'redirect_uri' => 'http://liked.ro/apps/jurat-xfactor/'
-        ));
-    echo '<a href = "'.$loginUrl.'" id="fbLogin">Sustine-o pe Simona Halep! Hai Simona!</a> ';
-    ?>
-    </div>
-    <?php
- }
-
-?>
-<div class="banda"></div>
-<!-- <div class="statement">
-	<p><span>O sustinem pe Simona Halep in finala turneului Roland Garros, 07 iunie 2014! Hai Simona, Hai România!<br /><strong></span> Acesta este un proiect individual, neafiliat unui brand sau unei campanii.</p></strong>
-</div>-->
-<div style="margin:50px auto 0 auto; width:120px; display:block;" class="fb-share-button" data-href="http://liked.ro/apps/hai-simona" data-type="button_count"></div>
-</div>
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-32495049-1', 'liked.ro');
-  ga('send', 'pageview');
-
-</script>
-</body>
-</html>
