@@ -63,11 +63,22 @@ if (isset($_GET['save'])):
     $response = (new FacebookRequest(
       $session, 'POST', '/me/photos', array(
         'source' => new CURLFile(__DIR__ .'/pics/avatar-' . $user . '.jpg', 'image/jpeg2wbmp'),
-        'message' => 'Test upload'
+        'message' => 'Sunt al patrulea jurat X Factor!'
       )
-    ))->execute()->getGraphObject();
-    echo "Posted with id: " . $response->getProperty('id') . "<br />";
-    echo '<a class="final" href="http://www.facebook.com/photo.php?fbid=' . $response->getProperty('id') . '&makeprofile=1" target="_blank">SALVEAZA POZA</a>';?>
+    ))->execute()->getGraphObject()
+    //echo "Posted with id: " . $response->getProperty('id') . "<br />";;?>
+    <div class="upper logged">
+       <div class="clearfix">
+           <div class="fleft">
+                <p>Poza ta pe facebook va arăta astfel:</p>
+           </div>
+           <div class="fleft pic">
+                <?php Image('http://graph.facebook.com/' . $user . '/picture?type=large', '1:1', '300x', $user);?>
+            </div>
+            <div class="fleft save"><a class="final" href="http://www.facebook.com/photo.php?fbid=<?= $response->getProperty('id')?>&makeprofile=1" target="_blank">SALVEAZA POZA</a></div>
+        </div>
+    </div>
+
 <?php else:?>
     <div class="upper logged">
        <div class="clearfix">
